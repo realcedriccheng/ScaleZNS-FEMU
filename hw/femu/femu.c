@@ -337,6 +337,7 @@ static void nvme_ns_init_identify(FemuCtrl *n, NvmeIdNs *id_ns)
     id_ns->dps           = n->dps;
     id_ns->dlfeat        = 0x9;
     id_ns->lbaf[0].lbads = 9;
+    // id_ns->lbaf[0].lbads = 12;
     id_ns->lbaf[0].ms    = 0;
 
     npdg = 1;
@@ -640,7 +641,8 @@ static Property femu_props[] = {
     DEFINE_PROP_UINT8("mpsmin", FemuCtrl, mpsmin, 0),
     DEFINE_PROP_UINT8("mpsmax", FemuCtrl, mpsmax, 0),
     DEFINE_PROP_UINT8("nlbaf", FemuCtrl, nlbaf, 5),
-    DEFINE_PROP_UINT8("lba_index", FemuCtrl, lba_index, 0),
+    // DEFINE_PROP_UINT8("lba_index", FemuCtrl, lba_index, 0),
+    DEFINE_PROP_UINT8("lba_index", FemuCtrl, lba_index, 3),
     DEFINE_PROP_UINT8("extended", FemuCtrl, extended, 0),
     DEFINE_PROP_UINT8("dpc", FemuCtrl, dpc, 0),
     DEFINE_PROP_UINT8("dps", FemuCtrl, dps, 0),
@@ -663,6 +665,7 @@ static Property femu_props[] = {
     DEFINE_PROP_UINT8("lnum_lun", FemuCtrl, oc_params.num_lun, 8),
     DEFINE_PROP_UINT8("lnum_pln", FemuCtrl, oc_params.num_pln, 2),
     DEFINE_PROP_UINT16("lmetasize", FemuCtrl, oc_params.sos, 16),
+    DEFINE_PROP_UINT64("zone_size", FemuCtrl, zns_params.zone_size_bs, 128),
     DEFINE_PROP_UINT8("zns_num_ch", FemuCtrl, zns_params.zns_num_ch, 2),
     DEFINE_PROP_UINT8("zns_num_lun", FemuCtrl, zns_params.zns_num_lun, 4),
     DEFINE_PROP_UINT8("zns_num_plane", FemuCtrl, zns_params.zns_num_plane, 2),

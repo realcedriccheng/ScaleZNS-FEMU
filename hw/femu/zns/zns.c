@@ -26,8 +26,10 @@ static int zns_init_zone_geometry(NvmeNamespace *ns, Error **errp)
     uint64_t zone_size, zone_cap;
     uint32_t lbasz = 1 << zns_ns_lbads(ns);
 
-    if (n->zone_size_bs) {
-        zone_size = n->zone_size_bs;
+    // if (n->zone_size_bs) {
+    //     zone_size = n->zone_size_bs;
+    if (n->zns_params.zone_size_bs) {
+        zone_size = n->zns_params.zone_size_bs * 1024 * 1024;
     } else {
         zone_size = NVME_DEFAULT_ZONE_SIZE;
     }
@@ -133,8 +135,8 @@ static void zns_init_zone_identify(FemuCtrl *n, NvmeNamespace *ns, int lba_index
     id_ns_z->zoc = 0;
     id_ns_z->ozcs = n->cross_zone_read ? 0x01 : 0x00;
 
-    id_ns_z->lbafe[lba_index].zsze = cpu_to_le64(n->zone_size);
-    id_ns_z->lbafe[lba_index].zdes = n->zd_extension_size >> 6; /* Units of 64B */
+    id_ns_z->lbafe[n->lba_index].zsze = cpu_to_le64(n->zone_size);
+    id_ns_z->lbafe[n->lba_index].zdes = n->zd_extension_size >> 6; /* Units of 64B */
 
     n->csi = NVME_CSI_ZONED;
     ns->id_ns.nsze = cpu_to_le64(n->num_zones * n->zone_size);
@@ -1280,13 +1282,13 @@ static void zns_init_params(FemuCtrl *n)
         id_zns->cache.write_cache[i].lpns = g_malloc0(sizeof(uint64_t) * id_zns->cache.write_cache[i].cap);
     }
 
-    femu_log("===========================================\n");
-    femu_log("|        ZMS HW Configuration()           |\n");      
-    femu_log("===========================================\n");
-    femu_log("|\tnchnl\t: %lu\t|\tchips per chnl\t: %lu\t|\tplanes per chip\t: %lu\t|\tblks per plane\t: %lu\t|\tpages per blk\t: %lu\t|\n",id_zns->num_ch,id_zns->num_lun,id_zns->num_plane,id_zns->num_blk,id_zns->num_page);
+    femu_log("===========================================\n\r");
+    femu_log("|        ZMS HW Configuration()           |\n\r");      
+    femu_log("===========================================\n\r");
+    femu_log("|nchnl: %lu|chips per chnl: %lu|planes per chip: %lu|blks per plane: %lu|pages per blk: %lu|\n\r",id_zns->num_ch,id_zns->num_lun,id_zns->num_plane,id_zns->num_blk,id_zns->num_page);
     //femu_log("|\tl2p sz\t: %lu\t|\tl2p cache sz\t: %u\t|\n",id_zns->l2p_sz,id_zns->cache.num_l2p_ent);
-    femu_log("|\tprogram unit\t: %lu KiB\t|\tstripe unit\t: %lu KiB\t|\t# of write caches\t: %u\t|\t size of write caches (4KiB)\t: %lu\t|\n",id_zns->program_unit/(KiB),id_zns->stripe_uint/(KiB),id_zns->cache.num_wc,(id_zns->stripe_uint/LOGICAL_PAGE_SIZE));
-    femu_log("===========================================\n"); 
+    femu_log("|program unit: %lu KiB|stripe unit: %lu KiB|# of write caches: %u| size of write caches (4KiB): %lu|\n\r",id_zns->program_unit/(KiB),id_zns->stripe_uint/(KiB),id_zns->cache.num_wc,(id_zns->stripe_uint/LOGICAL_PAGE_SIZE));
+    femu_log("===========================================\n\r"); 
 
     //Misao: use average read latency
     id_zns->timing.pg_rd_lat[SLC] = SLC_READ_LATENCY_NS;
